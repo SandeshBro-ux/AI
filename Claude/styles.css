@@ -348,94 +348,6 @@ button:hover {
     position: relative; /* For animation overlay */
 }
 
-/* Memory Game Styles */
-.memory-game-header {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 420px;
-    margin: 0 auto 20px;
-    padding: 10px 15px;
-    background: rgba(76, 29, 149, 0.7);
-    border-radius: 10px;
-    color: white;
-    font-weight: bold;
-}
-
-.memory-board {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 15px;
-    background-color: rgba(76, 29, 149, 0.3);
-    border-radius: 15px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-}
-
-.memory-card {
-    aspect-ratio: 1 / 1;
-    position: relative;
-    cursor: pointer;
-    transform-style: preserve-3d;
-    transform: scale(1);
-    transition: transform 0.5s;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.memory-card:hover {
-    transform: scale(1.03);
-}
-
-.memory-card.flipped {
-    transform: rotateY(180deg);
-}
-
-.memory-card.matched {
-    transform: rotateY(180deg) scale(0.95);
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
-    cursor: default;
-}
-
-.memory-card .front, 
-.memory-card .back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    backface-visibility: hidden;
-    border-radius: 8px;
-    font-size: 2rem;
-}
-
-.memory-card .front {
-    background-color: rgba(156, 39, 176, 0.8);
-    transform: rotateY(180deg);
-}
-
-.memory-card .back {
-    background-color: rgba(50, 30, 90, 0.8);
-    color: white;
-}
-
-.memory-card.matched .front {
-    background-color: rgba(76, 175, 80, 0.7);
-    animation: match-pulse 1.5s infinite alternate;
-}
-
-@keyframes match-pulse {
-    0% {
-        box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
-    }
-    100% {
-        box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
-    }
-}
-
 /* Word Memory Game Styles */
 .word-memory-area {
     width: 100%;
@@ -1272,4 +1184,97 @@ footer {
     background: rgba(156, 39, 176, 0.7);
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Make question mark larger */
+.question-mark {
+    font-size: 40px;
+}
+
+.card-back {
+    font-size: 40px;
+}
+
+/* Add these fixed styles */
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.card-front {
+    background-color: rgba(50, 30, 90, 0.8);
+    color: white;
+}
+
+.card-back {
+    background-color: rgba(156, 39, 176, 0.8);
+    transform: rotateY(180deg);
+}
+
+.memory-card.flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+/* Add a transition for the matched state as well */
+.memory-card.matched .card-inner {
+    transition: transform 0.8s, box-shadow 0.5s;
+}
+
+/* Fix the animation for card shaking when mismatched */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-10px); }
+    80% { transform: translateX(10px); }
+    100% { transform: translateX(0); }
+}
+
+.memory-card .shake {
+    animation: shake 0.6s ease-in-out;
+}
+
+/* Update these card animation styles */
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+/* Add a transition for the matched state as well */
+.memory-card.matched .card-inner {
+    transition: transform 0.8s, box-shadow 0.5s;
+}
+
+/* Fix the animation for card shaking when mismatched */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-10px); }
+    80% { transform: translateX(10px); }
+    100% { transform: translateX(0); }
+}
+
+.memory-card .shake {
+    animation: shake 0.6s ease-in-out;
 } 

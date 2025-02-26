@@ -72,6 +72,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 gameStarted: false,
                 gameOver: false,
                 gameInterval: null,
+                // Add sounds object with munch sound
+                sounds: {
+                    munch: new Audio('https://www.myinstants.com/media/sounds/munch-sound-effect.mp3')
+                },
                 
                 init: function() {
                     // Reset game state
@@ -104,12 +108,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Render initial state
                     this.draw();
                     
+                    // Preload and prepare sounds for instant playback
+                    this.sounds.munch.load();
+                    // Set to low latency mode
+                    this.sounds.munch.preload = 'auto';
+                    
+                    // Optional: Create a second copy of the sound for faster response
+                    this.sounds.munch2 = new Audio('https://www.myinstants.com/media/sounds/munch-sound-effect.mp3');
+                    this.sounds.munch2.load();
+                    this.sounds.munch2.preload = 'auto';
+                    
                     console.log("Snake game initialized");
                 },
                 
                 setupControls: function() {
                     // Keyboard controls
                     document.addEventListener('keydown', (e) => {
+                        // Prevent default browser scrolling for arrow keys
+                        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 
+                             'Space', ' ', 'KeyW', 'KeyA', 'KeyS', 'KeyD'].includes(e.code)) {
+                            e.preventDefault();
+                        }
+                        
                         if (!this.gameStarted) {
                             // Start game on any direction key
                             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 's', 'a', 'd'].includes(e.key)) {
@@ -254,6 +274,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (!ateFood) {
                         this.snake.pop();
                     } else {
+                        // Play munching sound when snake eats food
+                        this.playSound('munch');
+                        
                         // Generate new food
                         this.generateFood();
                         
@@ -391,6 +414,31 @@ document.addEventListener('DOMContentLoaded', function() {
                         clearInterval(this.gameInterval);
                         this.gameInterval = null;
                     }
+                },
+                
+                // Improve the playSound function for faster response
+                playSound: function(soundName) {
+                    if (this.sounds[soundName]) {
+                        // Use the alternate sound if the main one is playing
+                        if (soundName === 'munch' && !this.sounds.munch.paused) {
+                            this.sounds.munch2.currentTime = 0;
+                            this.sounds.munch2.play().catch(error => {
+                                console.log(`Error playing backup sound:`, error);
+                            });
+                            return;
+                        }
+                        
+                        // For immediate playback, set currentTime to 0
+                        this.sounds[soundName].currentTime = 0;
+                        
+                        // Play with high priority
+                        const playPromise = this.sounds[soundName].play();
+                        if (playPromise !== undefined) {
+                            playPromise.catch(error => {
+                                console.log(`Error playing ${soundName} sound:`, error);
+                            });
+                        }
+                    }
                 }
             };
             
@@ -517,5 +565,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
     
+    // Add this line to prevent scrolling
+    preventArrowKeyScrolling();
+    
     console.log("Snake game setup complete with animation and auto-start");
-}); 
+});
+
+// Add this code to prevent page scrolling during Snake game
+function preventArrowKeyScrolling() {
+    // Keys we want to prevent default behavior for
+    const keysToPrevent = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 
+                          'Space', ' ', 'KeyW', 'KeyA', 'KeyS', 'KeyD'];
+    
+    // Add event listener to window
+    window.addEventListener('keydown', function(e) {
+        // Check if snake game is active
+        const snakeContainer = document.getElementById('snake-container');
+        const snakeCanvas = document.getElementById('snake-canvas');
+        
+        // Only prevent default if snake game is active and visible
+        if (!snakeContainer.classList.contains('hidden') && 
+            !snakeCanvas.classList.contains('hidden') && 
+            keysToPrevent.includes(e.code)) {
+            
+            // Prevent the default action (scrolling)
+            e.preventDefault();
+            
+            // Log for debugging
+            console.log('Prevented default for key:', e.code);
+        }
+    }, false);
+} 
