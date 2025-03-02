@@ -567,5 +567,3 @@ const playBeep = (type) => {
             break;
     }
 }
-
-
